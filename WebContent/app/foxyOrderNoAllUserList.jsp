@@ -12,6 +12,7 @@
     <%@ include file="foxyHeader.jsp" %>
     <table class="box" width="100%">
         <tr><td>
+        <h:messages errorClass="FOX_ERROR" showDetail="true" showSummary="true" />  
                 <h:panelGrid id="UpdAddGrid" styleClass="tablebg" width="100%">
                     <%-- Title for Add --%>
                     <h:outputText value="Reserved RefNo Listing For All Users" styleClass="smalltitle"/>
@@ -41,13 +42,18 @@
                                     <f:facet name="header">
                                         <h:outputText value="Ref No" />
                                     </f:facet>
-                                    <h:outputText value="#{ordNoBean.reservedNo}" 
-                                                  rendered="#{ordNoBean.expired}"
-                                                  style="color: #FF0000; font-weight:bold; text-align: center;"/>
-
-                                    <h:outputText value="#{ordNoBean.reservedNo}" 
-                                                  rendered="#{not ordNoBean.expired}"
-                                                  style="color: #000000; font-weight:bold; text-align: center;"/>
+                                    <h:outputText 
+                                       value="#{ordNoBean.reservedNo}"
+                                       rendered="#{ordNoBean.expired}"
+                                       style="color: #FF0000; font-weight:bold; text-align: center;">
+			                        </h:outputText> 
+                                    <h:commandLink id="links1" 
+                                       value="#{ordNoBean.reservedNo}"
+                                       rendered="#{!ordNoBean.expired}"
+                                       style="color: #000000; font-weight:bold; font-size; text-align: center;"
+                                       action="#{foxyOrderNoAllUserList.ordNoReservedUpdate}">
+                                       <t:updateActionListener property="#{foxySessionData.resvNoId}" value="#{ordNoBean.resvNoId}"/>
+			                        </h:commandLink>
                                 </h:column>
 
                                 <h:column>

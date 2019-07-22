@@ -12,6 +12,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -527,7 +529,7 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
         for (int i = 0; i < orders.size(); ++i) {
             OrderSummary ords = (OrderSummary)orders.get(i);
             detailtable.addCell(new Phrase(ords.getMonth() + ords.getLocation(), font8));
-            cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ords.getQtyPcsRounded() + " pcs", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
+            cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ((double)ords.getQtyPcsRounded())/12 + " dzn", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
             cell.setHorizontalAlignment(2);
             cell.setPaddingRight(10.0f);
             cell.cloneNonPositionParameters(detail_r);
@@ -917,7 +919,7 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
             for (int i = 0; i < orders.size(); ++i) {
                 OrderSummary ords = (OrderSummary)orders.get(i);
                 detailtable.addCell(new Phrase(ords.getMonth() + ords.getLocation(), font8));
-                cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ords.getQtyPcsRounded() + " pcs", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
+                cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ((double)ords.getQtyPcsRounded())/12 + " dzn", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
                 cell.setHorizontalAlignment(2);
                 cell.setPaddingRight(10.0f);
                 cell.cloneNonPositionParameters(detail_r);
@@ -1387,7 +1389,7 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
             for (int i = 0; i < orders.size(); ++i) {
                 OrderSummary ords = (OrderSummary)orders.get(i);
                 detailtable.addCell(new Phrase(ords.getMonth() + ords.getLocation(), font8));
-                cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ords.getQtyPcsRounded() + " pcs", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
+                cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ((double)ords.getQtyPcsRounded())/12 + " dzn", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
                 cell.setHorizontalAlignment(2);
                 cell.setPaddingRight(10.0f);
                 cell.cloneNonPositionParameters(detail_r);
@@ -1493,6 +1495,7 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
     public String OrderConfirmationFormByCountryFmt04(Orders ord) {
         HttpServletResponse resp = (HttpServletResponse)this.ectx.getResponse();
         ServletOutputStream out = null;
+        double totalQty = 0;
         PdfPCell cell = null;
         String filename = null;
         String filepath = null;
@@ -1545,6 +1548,19 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
         detail_r.setBorderWidthTop(0.0f);
         Document document = new Document(PageSize.A4, 36.0f, 36.0f, 36.0f, 54.0f);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        tmpstr = "from OrderSummary where orderid = '" + this.ordId + "' AND status != 'D' ";
+        if (!"".equals(this.origin) && this.origin != null) {
+            tmpstr = tmpstr + "AND location = '" + this.origin + "' ";
+        }
+        tmpstr = tmpstr + "order by month, location";
+        Session session = HibernateUtil.currentSession();
+        List orders = session.createQuery(tmpstr).list();
+       		
+        for (int i = 0; i < orders.size(); ++i) {
+            OrderSummary ords = (OrderSummary)orders.get(i);
+            Number cellQty = ords.getQtyPcsRounded() >0 ? new BigDecimal(((double)ords.getQtyPcsRounded())/12).setScale(2, RoundingMode.HALF_EVEN) : ords.getQtyDznRounded();
+            totalQty= totalQty +cellQty.doubleValue();
+        }
         try {
             filepath = this.getFoxyParam("FileUploadPath");
             filename = filepath + File.separatorChar + this.ordId + ".jpg";
@@ -1811,10 +1827,10 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
             cell = new PdfPCell(new Phrase(": " + ord.getDoubleStrValue(ord.getActualTrim()), font10));
             cell.cloneNonPositionParameters(border_lc);
             datatable.addCell(cell);
-            cell = new PdfPCell(new Phrase("", font10));
+            cell = new PdfPCell(new Phrase("Total Quantity (DZN)", font10));
             cell.cloneNonPositionParameters(border_rc);
             datatable.addCell(cell);
-            cell = new PdfPCell(new Phrase("", font10));
+            cell = new PdfPCell(new Phrase(": "+new BigDecimal(totalQty).setScale(2, RoundingMode.HALF_EVEN), font10));
             cell.cloneNonPositionParameters(border_r);
             datatable.addCell(cell);
             border_l.setBorderWidthBottom(1.0f);
@@ -1850,20 +1866,20 @@ public class FoxyDownloadOrderConfirmationFormPage extends Page implements Seria
             detailtable.addCell(new Phrase("Factory", tblHeader));
             detailtable.addCell(new Phrase("Method", tblHeader));
             datatable.setHeaderRows(1);
-            tmpstr = "from OrderSummary where orderid = '" + this.ordId + "' AND status != 'D' ";
-            if (!"".equals(this.origin) && this.origin != null) {
-                tmpstr = tmpstr + "AND location = '" + this.origin + "' ";
-            }
-            tmpstr = tmpstr + "order by month, location";
-            Session session = HibernateUtil.currentSession();
-            List orders = session.createQuery(tmpstr).list();
+           
             Category cat = null;
             String rmkStr = null;
             Boolean firstRmk = true;
+			
             for (int i = 0; i < orders.size(); ++i) {
                 OrderSummary ords = (OrderSummary)orders.get(i);
                 detailtable.addCell(new Phrase(ords.getMonth() + ords.getLocation(), font8));
-                cell = "PCS".equals(ords.getUnit()) ? new PdfPCell(new Phrase("" + ords.getQtyPcsRounded() + " pcs", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
+                Number cellQty = ords.getQtyPcsRounded() >0 ? new BigDecimal(((double)ords.getQtyPcsRounded())/12).setScale(2, RoundingMode.HALF_EVEN) : ords.getQtyDznRounded();
+                //totalQty= totalQty +cellQty.doubleValue();
+                cell = new PdfPCell(new Phrase("" + cellQty + " dzn", font8));
+               // cell = ords.getQtyPcsRounded() >0 ? new PdfPCell(new Phrase("" + new BigDecimal(((double)ords.getQtyPcsRounded())/12).setScale(2, RoundingMode.HALF_EVEN) + " dzn", font8)) : new PdfPCell(new Phrase("" + ords.getQtyDznRounded() + " dzn", font8));
+
+
                 cell.setHorizontalAlignment(2);
                 cell.setPaddingRight(10.0f);
                 cell.cloneNonPositionParameters(detail_r);

@@ -92,4 +92,10 @@ public class FoxyOrderNoAllUserListPage extends Page implements Serializable {
         }
         return this.foxyListModel;
     }
+    
+    public String ordNoReservedUpdate() {
+        foxySessionData.setOrderId(foxySessionData.getPageParameter());
+        foxySessionData.setAction("UPDATE");
+        return "go_reserveOrderNoUpdate";
+      }
 }

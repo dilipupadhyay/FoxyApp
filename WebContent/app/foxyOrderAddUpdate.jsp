@@ -135,9 +135,9 @@
                         <h:panelGroup>
                             <h:panelGroup id="UnitPrices">
                                 <h:inputText id="UnitPrice" styleClass="FOX_INPUT" maxlength="12" size="15" required="true" value="#{foxyOrder.unitPrice}"
-                                             onchange="if ( this.value > 10 )
+                                             onchange="if ( this.value > 8 )
                                              { 
-                                             alert(\"Unusual Unit Price [\" + this.value + \"] > 10, Please make sure it is accurate before save \");
+                                             alert(\"Unusual Unit Price [\" + this.value + \"] > 8, Please make sure it is accurate before save \");
                                              }" />
                             </h:panelGroup>
                             <h:outputText value=" per pcs" />

@@ -288,6 +288,7 @@ public class FoxyOrderPage
         style = od.getStyleCode();
         season = od.getSeason();
         unitPrice = od.getUnitPrice();
+
         merchandiser = od.getMerchandiser();
         description = od.getDescription();
         dailyCap = od.getDailyCap();
@@ -345,6 +346,12 @@ public class FoxyOrderPage
       order.setOrderId(smartGetNewOrderId());
       
       setSessionObject1((Object)null);
+    }
+    
+    if (getUnitPrice()>8) {
+    	FacesMessage fmsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "  Error: ", "UnitPrice should not be more that 8.");
+        ctx.addMessage("UpdAddForm:UnitPrice", fmsg);
+        return "error";
     }
     try
     {

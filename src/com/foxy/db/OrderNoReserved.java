@@ -21,9 +21,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class OrderNoReserved implements Serializable {
 
-    private Long resvNoId = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long resvNoId = null;
     private Integer year = null;
     private Integer mainFactory = null;
+    private String cnameCode = null;
     private String reservedNo = null;
     private String forUserId = null;
     private Date reservedOn = null;
@@ -147,4 +152,12 @@ public class OrderNoReserved implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+
+	public String getCnameCode() {
+		return cnameCode;
+	}
+
+	public void setCnameCode(String cnameCode) {
+		this.cnameCode = cnameCode;
+	}
 }

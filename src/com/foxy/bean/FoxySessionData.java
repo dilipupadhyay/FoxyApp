@@ -11,13 +11,17 @@ package com.foxy.bean;
 import java.util.Date;
 import javax.faces.context.FacesContext;
 
+import com.foxy.db.OrderNoReserved;
+
 /**
  *
  * @author hcting
  */
 public class FoxySessionData {
 
-    private String orderId = null;
+    private Long resvNoId= null;
+	
+	private String orderId = null;
     private String searchKey = null;       /* Search key for search page */
 
     private String searchType = null;       /* Search Type for search page */
@@ -32,6 +36,7 @@ public class FoxySessionData {
     private Long pageParameterLong = null;
     private Long pageParameterLong2 = null;
     private Object sessObject1 = null;
+    private OrderNoReserved ordNoReservedBeanO = null;
     private Date fromDate = null;
     private Date toDate = null;
 
@@ -213,4 +218,21 @@ public class FoxySessionData {
             return false;
         }
     }
+
+	public Long getResvNoId() {
+		return resvNoId;
+	}
+
+	public void setResvNoId(Long resvNoId) {
+		this.resvNoId = resvNoId;
+	}
+
+	public OrderNoReserved getOrdNoReservedBeanO() {
+		return ordNoReservedBeanO;
+	}
+
+	public void setOrdNoReservedBeanO(OrderNoReserved ordNoReservedBeanO) {
+		this.ordNoReservedBeanO = ordNoReservedBeanO;
+	}
+
 }

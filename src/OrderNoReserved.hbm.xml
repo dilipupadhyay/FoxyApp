@@ -10,6 +10,7 @@
         </id>
         <property name="year" column="year"/>
         <property name="mainFactory" column="mainfactory"/>
+        <property name="cnameCode" column="cnameCode"/>
         <property name="reservedNo" column="reservedno"/>
         <property name="forUserId" column="foruserid"/>
         <property name="reservedOn" column="reservedon"/>

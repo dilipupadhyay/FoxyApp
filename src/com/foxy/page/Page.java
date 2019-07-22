@@ -78,8 +78,8 @@ public class Page {
             this.ectx = ctx.getExternalContext();
             this.foxySessionData = (FoxySessionData) getBean("foxySessionData");
             this.action = this.getAction();
-            //System.out.println("Action : " + this.action);
-            //System.out.println(this.ectx.getRequest().toString());
+            System.out.println("====Action==== : " + this.action);
+            System.out.println(this.ectx.getRequest().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
